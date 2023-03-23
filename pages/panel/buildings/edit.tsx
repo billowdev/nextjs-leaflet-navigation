@@ -70,12 +70,17 @@ const Edit = ({ building, allBuildings }: Props) => {
   
 
 
+  const [currentLat, setCurrentLat] = React.useState<number>(parseFloat(building.lat));
+  const [currentLng, setCurrentLng] = React.useState<number>(parseFloat(building.lng));
+
   const [currentLatLng, setCurrentLatLng] = React.useState<[number, number]>([parseFloat(building.lat), parseFloat(building.lng)]);
   const center: LatLngExpression = [currentLatLng[0], currentLatLng[1]];
   const zoom: number = 16;
 
   const handleMarkerDragEnd = (event: any) => {
-    console.log([parseFloat(event.target.getLatLng()['lat']), parseFloat(event.target.getLatLng()['lng'])])
+    // console.log([parseFloat(event.target.getLatLng()['lat']), parseFloat(event.target.getLatLng()['lng'])])
+    setCurrentLat(event.target.getLatLng()['lat']);
+    setCurrentLng(event.target.getLatLng()['lng']);
     setCurrentLatLng([parseFloat(event.target.getLatLng()['lat']), parseFloat(event.target.getLatLng()['lng'])])
   }
 
@@ -103,7 +108,6 @@ const Edit = ({ building, allBuildings }: Props) => {
               type="text"
               label="รหัสอาคาร/โหนด"
             />
-   
 
             <Field
               style={{ marginTop: 16 }}
@@ -126,10 +130,12 @@ const Edit = ({ building, allBuildings }: Props) => {
            <Field
               style={{ marginTop: 16 }}
               fullWidth
+              value={currentLat}
               component={TextField}
               onChange={(e: React.ChangeEvent<any>) => {
                 e.preventDefault();
-                setFieldValue("lat", currentLatLng[0].toString());
+                setCurrentLat(currentLat);
+                setFieldValue("lat", currentLat.toString());
               }}
               name="lat"
               type="text"
@@ -139,9 +145,11 @@ const Edit = ({ building, allBuildings }: Props) => {
             <Field
               style={{ marginTop: 16 }}
               fullWidth
+              value={currentLng}
               onChange={(e: React.ChangeEvent<any>) => {
                 e.preventDefault();
-                setFieldValue("lng", currentLatLng[1].toString());
+                setCurrentLng(currentLng);
+                setFieldValue("lng", currentLng.toString());
               }}
               component={TextField}
               name="lng"

@@ -9,7 +9,7 @@ import {
   CardActions,
   Button,
 } from "@mui/material";
-import { Field, Form, Formik, FormikProps } from "formik";
+import { Field, Form, Formik, FormikProps} from "formik";
 import { TextField } from "formik-material-ui";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Link from "next/link";
@@ -21,8 +21,10 @@ import { updateBuilding } from "@/store/slices/buildingSlice";
 import toast, { Toaster } from "react-hot-toast";
 import withAuth from "@/components/withAuth";
 import { IconOptions, LatLng, LatLngExpression } from 'leaflet';
-
+import { Switch } from '@material-ui/core';
 import {isServer} from '@/utils/common.util'
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+
 export interface BuildingPayloadC {
 	bid: string
 	desc: string
@@ -56,18 +58,20 @@ const Popup = dynamic(() => import('react-leaflet').then((mod) => mod.Popup), {
 
 const AddBuilding = () => {
 
-
-  
-
-
   const [currentLatLng, setCurrentLatLng] = React.useState<[number, number]>([17.18898481078793, 104.0896523550969]);
+  const [currentLat, setCurrentLat] = React.useState<number>(17.18898481078793);
+  const [currentLng, setCurrentLng] = React.useState<number>(parseFloat(104.0896523550969));
+
   const center: LatLngExpression = [currentLatLng[0], currentLatLng[1]];
   const zoom: number = 16;
 
   const handleMarkerDragEnd = (event: any) => {
     console.log([parseFloat(event.target.getLatLng()['lat']), parseFloat(event.target.getLatLng()['lng'])])
+    setCurrentLat(parseFloat(event.target.getLatLng()['lat']));
+    setCurrentLng(parseFloat(event.target.getLatLng()['lng']));
     setCurrentLatLng([parseFloat(event.target.getLatLng()['lat']), parseFloat(event.target.getLatLng()['lng'])])
   }
+
 
 
 
@@ -76,7 +80,9 @@ const AddBuilding = () => {
   const showForm = ({
     values,
     setFieldValue,
+    setFieldTouched,
     isValid,
+    setSubmitting,
   }: FormikProps<BuildingPayload>) => {
     return (
       <Form>
@@ -115,10 +121,12 @@ const AddBuilding = () => {
            <Field
               style={{ marginTop: 16 }}
               fullWidth
+              value={currentLat}
               component={TextField}
               onChange={(e: React.ChangeEvent<any>) => {
                 e.preventDefault();
-                setFieldValue("lat", currentLatLng[0].toString());
+                const newLat = parseFloat(e.target.value);
+                setCurrentLat(newLat);
               }}
               name="lat"
               type="text"
@@ -128,9 +136,11 @@ const AddBuilding = () => {
             <Field
               style={{ marginTop: 16 }}
               fullWidth
+              value={currentLng}
               onChange={(e: React.ChangeEvent<any>) => {
                 e.preventDefault();
-                setFieldValue("lng", currentLatLng[1].toString());
+                setCurrentLng(parseFloat(e.target.value));
+                setFieldValue("lng", currentLng.toString());
               }}
               component={TextField}
               name="lng"
@@ -138,6 +148,34 @@ const AddBuilding = () => {
               label="ลองจิจูด"
             />
             <br />
+
+     <FormControlLabel
+            control={
+              <Field
+                name="is_node"
+                render={({ field }) => (
+                  <Switch
+                    disabled={false}
+                    {...field}
+                    checked={values.is_node}
+                    onBlur={(e: React.ChangeEvent<any>) => {
+                      e.preventDefault();
+                      const { name, value } = e.target;
+                      setFieldTouched(name, true);
+                    }}
+                    onChange={(e: React.ChangeEvent<any>) => {
+                      e.preventDefault();
+                      const { name, checked } = e.target;
+                      setFieldValue(name, checked);
+                    }}
+
+                  />
+                )}
+              />
+            }
+            label="เป็นข้อมูลสถานที่หรืออาคารใช่หรือไม่"
+          />
+
           </CardContent>
           <CardActions>
             <Button
@@ -163,7 +201,16 @@ const AddBuilding = () => {
 
     
 
-  
+  const initialValues: BuildingPayload =  {
+    name: "",
+    desc:"",
+    bid: "",
+    image: "",
+    is_node: false,
+    lat: currentLat,
+    lng: currentLng
+  }
+
   return (
     <Layout>
       <Formik
@@ -171,27 +218,22 @@ const AddBuilding = () => {
           let errors: any = {};
           if (!values.bid) errors.bid = "กรุณากรอกรหัสโหนด";
           if (!values.name) errors.name = "กรุณากรอกชื่ออาคาร";
+        
           return errors;
         }}
-        initialValues={{
-          name: "",
-          desc:"",
-          bid: "",
-          image: "",
-          is_node: false,
-          lat: "",
-          lng:""
-        }}
+        initialValues={initialValues}
         onSubmit={async (values, { setSubmitting }) => {
        
-        //   const createStatus = await dispatch(createBuilding(newUpdateLatLng))
+           //   const createStatus = await dispatch(createBuilding(newUpdateLatLng))
           // console.log(newUpdateLatLng)
-          // console.log(newUpdateLatLng)
-          // console.log("=================")
-          if (updateStatus.meta.requestStatus === "fulfilled") {
-            toast.success("เพิ่มข้อมูลอาคารสำเร็จ")
-            router.push("/panel/buildings")
-          }
+        const newValues = {...values, ...{lat:currentLat}, ...{lng:currentLng}}   
+       console.log("=================")
+          console.log(newValues)
+          console.log("=================")
+          // if (updateStatus.meta.requestStatus === "fulfilled") {
+          //   toast.success("เพิ่มข้อมูลอาคารสำเร็จ")
+          //   router.push("/panel/buildings")
+          // }
           setSubmitting(false);
         }}
       >
