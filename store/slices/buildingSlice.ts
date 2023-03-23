@@ -29,16 +29,13 @@ export const getBuildings = createAsyncThunk(
 export const createBuilding = createAsyncThunk(
   "buildings/create",
   async (data: any) => {
-    await buildingService.createBuilding(data);
+    await buildingService.createBuilding(data.data, data.accessToken);
   }
 );
 
 export const updateBuilding = createAsyncThunk(
   "buildings/update",
   async (data:any) => {
-    console.log("========== update building slice ============")
-    console.log(data)
-    console.log("========================================")
     await buildingService.updateBuilding(data.id, data.body, data.accessToken);
   }
 );

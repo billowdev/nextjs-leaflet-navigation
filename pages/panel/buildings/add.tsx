@@ -11,33 +11,26 @@ import {
 } from "@mui/material";
 import { Field, Form, Formik, FormikProps} from "formik";
 import { TextField } from "formik-material-ui";
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import React, { useEffect, useState} from "react";
 import Image from "next/image";
 import { Router, useRouter } from "next/router";
 import { useAppDispatch } from "@/store/store";
-import { createBuilding } from "@/store/slices/buildingSlice";
+// import { createBuilding } from "@/store/slices/buildingSlice";
+import { createBuilding } from "@/services/buildingService";
 import toast, { Toaster } from "react-hot-toast";
 import withAuth from "@/components/withAuth";
 import { IconOptions, LatLng, LatLngExpression } from 'leaflet';
 import { Switch, FormControlLabel } from '@material-ui/core';
 import {isServer} from '@/utils/common.util'
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
 
-
-export interface BuildingPayloadC {
-	bid: string
-	desc: string
-	id: number
-	is_node: boolean
-	lat?: string
-	lng?: string
-	name: string
-	image: string
-  }
   
 
-
+  interface Props {
+    accessToken?: string
+  }
+  
 
 const MapContainer = dynamic(() => import('react-leaflet').then((mod) => mod.MapContainer), {
   ssr: false, // disable server-side rendering
@@ -56,7 +49,7 @@ const Popup = dynamic(() => import('react-leaflet').then((mod) => mod.Popup), {
 
 
 
-const AddBuilding = () => {
+const AddBuilding = ({ accessToken }: Props) => {
 
   const [currentLatLng, setCurrentLatLng] = React.useState<[number, number]>([17.18898481078793, 104.0896523550969]);
   const [currentLat, setCurrentLat] = React.useState<number>(17.18898481078793);
@@ -149,32 +142,64 @@ const AddBuilding = () => {
             />
             <br />
 
-     <FormControlLabel
-            control={
-              <Field
-                name="is_node"
-                render={({ field }) => (
-                  <Switch
-                    disabled={false}
-                    {...field}
-                    checked={values.is_node}
-                    onBlur={(e: React.ChangeEvent<any>) => {
-                      e.preventDefault();
-                      const { name, value } = e.target;
-                      setFieldTouched(name, true);
-                    }}
-                    onChange={(e: React.ChangeEvent<any>) => {
-                      e.preventDefault();
-                      const { name, checked } = e.target;
-                      setFieldValue(name, checked);
-                    }}
+            <FormControlLabel
+              control={
+                <Field
+                  name="is_node"
+                  render={({ field }:any) => (
+                    <Switch
+                      {...field}
+                      checked={values.is_node}
+                      onBlur={(e: React.ChangeEvent<any>) => {
+                        e.preventDefault();
+                        const { name, value } = e.target;
+                        setFieldTouched(name, true);
+                      }}
+                      onChange={(e: React.ChangeEvent<any>) => {
+                        e.preventDefault();
+                        const { name, checked } = e.target;
+                        setFieldValue(name, checked);
+                      }}
 
-                  />
-                )}
-              />
-            }
-            label="เป็นข้อมูลสถานที่หรืออาคารใช่หรือไม่"
-          />
+                    />
+                  )}
+                />
+              }
+              label="เป็นข้อมูลสถานที่หรืออาคารใช่หรือไม่"
+            />
+
+<div style={{ margin: 16 }}>{showPreviewImage(values)}</div>
+
+<div>
+  <Image
+    objectFit="cover"
+    alt="product image"
+    src="/static/img/logo-h.png"
+    width={25}
+    height={20}
+  />
+  <span style={{ color: "#00B0CD", marginLeft: 10 }}>
+    Add Picture
+  </span>
+
+  <input
+    type="file"
+    onChange={(e: React.ChangeEvent<any>) => {
+      e.preventDefault();
+      setFieldValue("file", e.target.files[0]); // for upload
+      setFieldValue(
+        "file_obj",
+        URL.createObjectURL(e.target.files[0])
+      ); // for preview image
+    }}
+    name="image"
+    click-type="type1"
+    multiple
+    accept="image/*"
+    id="files"
+    style={{ padding: "20px 0 0 20px" }}
+  />
+</div>
 
           </CardContent>
           <CardActions>
@@ -200,6 +225,29 @@ const AddBuilding = () => {
   };
 
     
+  const showPreviewImage = (values: any) => {
+    if (values.file_obj) {
+      return (
+        <Image
+          objectFit="contain"
+          alt="building image"
+          src={values.file_obj}
+          width={100}
+          height={100}
+        />
+      );
+    } else if (values.image) {
+      return (
+        <Image
+          objectFit="contain"
+          alt="building image"
+          src={buildinngImageURL(values.image)}
+          width={100}
+          height={100}
+        />
+      );
+    }
+  };
 
   const initialValues: BuildingPayload =  {
     name: "",
@@ -223,12 +271,24 @@ const AddBuilding = () => {
         }}
         initialValues={initialValues}
         onSubmit={async (values, { setSubmitting }) => {
-                 const newValues = {...values, ...{lat:currentLat}, ...{lng:currentLng}}   
-          const createStatus = await dispatch(createBuilding(newValues))
-          if (createStatus.meta.requestStatus === "fulfilled") {
-            toast.success("เพิ่มข้อมูลอาคารสำเร็จ")
-            router.push("/panel/buildings")
+          let data : FormData = new FormData();
+          data.append("bid", String(values.bid));
+          data.append("desc", String(values.desc));
+          data.append("is_node", String(values.is_node));
+          data.append("lat", String(currentLat));
+          data.append("lng", String(currentLng));
+          data.append("name", String(values.name));
+          if (values.file) {
+            data.append("file", values.file);
           }
+          const createStatus = await createBuilding(data, accessToken)
+          console.log("==============")
+          console.log(createStatus)
+          console.log("==============")
+          // if (createStatus.meta.requestStatus === "fulfilled") {
+          //   toast.success("เพิ่มข้อมูลอาคารสำเร็จ")
+          //   router.push("/panel/buildings")
+          // }
           setSubmitting(false);
         }}
       >
@@ -255,4 +315,15 @@ const AddBuilding = () => {
   );
 };
 
+export const getServerSideProps: GetServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+    const accessToken = context.req.cookies['access_token']
+    return {
+      props: {
+        accessToken
+      },
+    };
+  } 
 export default withAuth(AddBuilding);
+

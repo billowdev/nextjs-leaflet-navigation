@@ -166,9 +166,8 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
               control={
                 <Field
                   name="is_node"
-                  render={({ field }) => (
+                  render={({ field }:any) => (
                     <Switch
-                      disabled={false}
                       {...field}
                       checked={values.is_node}
                       onBlur={(e: React.ChangeEvent<any>) => {
@@ -283,7 +282,7 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
           data.append("id", String(values.id));
           data.append("bid", String(values.bid));
           data.append("desc", String(values.desc));
-          data.append("is_node", values.is_node);
+          data.append("is_node", String(values.is_node));
          
           data.append("lat", String(currentLat));
           data.append("lng", String(currentLng));

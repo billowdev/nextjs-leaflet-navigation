@@ -38,7 +38,7 @@ async function signin(req: NextApiRequest, res: NextApiResponse<any>) {
 	
 		setCookie(res, ACCESS_TOKEN_KEY, access_token, {
 			httpOnly: true,
-			secure: process.env.NODE_ENV !== "development",
+			// secure: process.env.NODE_ENV !== "development",
 			sameSite: "strict",
 			path: "/",
 		});

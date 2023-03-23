@@ -51,52 +51,6 @@ async function deleteBuilding(req: NextApiRequest, res: NextApiResponse<any>) {
   }
 }
 
-// function parseFormData(formData) {
-//   const parsedData = {};
-//   const formEntries = formData.split("\r\n");
-
-//   formEntries.forEach((entry) => {
-//     if (entry.startsWith("Content-Disposition")) {
-//       const nameRegex = /name="(.+?)"/g;
-//       const nameMatch = nameRegex.exec(entry);
-//       const fieldName = nameMatch[1];
-//       parsedData[fieldName] = "";
-//     } else if (entry !== "" && !entry.startsWith("------")) {
-//       const lastField = Object.keys(parsedData)[Object.keys(parsedData).length - 1];
-//       parsedData[lastField] = entry;
-//     }
-//   });
-
-//   return parsedData;
-// }
-
-function parseFormData(formDataString) {
-  const formData = new FormData();
-  const formEntries = formDataString.split("\r\n");
-  c=0
-  let fieldName;
-  formEntries.forEach((entry) => {
-    if (entry.startsWith("Content-Disposition")) {
-      const nameRegex = /name="(.+?)"/g;
-      const nameMatch = nameRegex.exec(entry);
-      fieldName = nameMatch[1];
-    } else if (entry !== "" && !entry.startsWith("------")) {
-      if(fieldName=="image_file"){
-        newFieldName = `${fieldName}${c}`
-        c+=1
-        formData.append(newFieldName, entry);
-      }else{
-        formData.append(fieldName, entry);
-      }
-    }
-  });
-
-  return formData;
-}
-
-
-
-
 async function updateBuilding(req: NextApiRequest, res: NextApiResponse<any>) {
   try {
     const accessToken = req.cookies[ACCESS_TOKEN_KEY];
