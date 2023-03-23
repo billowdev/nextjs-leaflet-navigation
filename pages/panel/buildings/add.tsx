@@ -245,13 +245,14 @@ const AddBuilding = ({ accessToken }: Props) => {
   };
 
   const initialValues: BuildingPayload =  {
+    
     name: "",
     desc:"",
     bid: "",
     image: "",
     is_node: false,
-    lat: currentLat,
-    lng: currentLng
+    lat: currentLat.toString(),
+    lng: currentLng.toString()
   }
 
   return (
