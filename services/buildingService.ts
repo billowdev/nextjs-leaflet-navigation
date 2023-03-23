@@ -13,7 +13,8 @@ export const getBuilding = async (id: string) => {
 };
 
 export const createBuilding = async (data: FormData, accessToken:string): Promise<any> => {
-	await axios.post(`/buildings/create/${id}`, data, {
+	console.log(accessToken)
+	await axios.post(`/buildings/create`, data, {
 		headers: {
 		  Authorization: `Bearer ${accessToken}`
 		},

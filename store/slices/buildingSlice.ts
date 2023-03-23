@@ -30,6 +30,7 @@ export const createBuilding = createAsyncThunk(
   "buildings/create",
   async (data: any) => {
     await buildingService.createBuilding(data.data, data.accessToken);
+    store.dispatch(getBuildings());
   }
 );
 

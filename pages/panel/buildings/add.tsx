@@ -16,15 +16,13 @@ import React, { useEffect, useState} from "react";
 import Image from "next/image";
 import { Router, useRouter } from "next/router";
 import { useAppDispatch } from "@/store/store";
-// import { createBuilding } from "@/store/slices/buildingSlice";
-import { createBuilding } from "@/services/buildingService";
+import { createBuilding } from "@/store/slices/buildingSlice";
 import toast, { Toaster } from "react-hot-toast";
 import withAuth from "@/components/withAuth";
 import { IconOptions, LatLng, LatLngExpression } from 'leaflet';
 import { Switch, FormControlLabel } from '@material-ui/core';
-import {isServer} from '@/utils/common.util'
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-
+import { buildingImageURL } from '@/utils/common.util'
   
 
   interface Props {
@@ -64,9 +62,6 @@ const AddBuilding = ({ accessToken }: Props) => {
     setCurrentLng(parseFloat(event.target.getLatLng()['lng']));
     setCurrentLatLng([parseFloat(event.target.getLatLng()['lat']), parseFloat(event.target.getLatLng()['lng'])])
   }
-
-
-
 
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -241,7 +236,7 @@ const AddBuilding = ({ accessToken }: Props) => {
         <Image
           objectFit="contain"
           alt="building image"
-          src={buildinngImageURL(values.image)}
+          src={buildingImageURL(values.image)}
           width={100}
           height={100}
         />
@@ -281,10 +276,12 @@ const AddBuilding = ({ accessToken }: Props) => {
           if (values.file) {
             data.append("file", values.file);
           }
-          const createStatus = await createBuilding(data, accessToken)
-          console.log("==============")
-          console.log(createStatus)
-          console.log("==============")
+          const createStatus = await dispatch(createBuilding({data, accessToken}))
+          if (createStatus.meta.requestStatus === "fulfilled") {
+            toast.success("เพิ่มข้อมูลอาคารสำเร็จ")
+            router.push("/panel/buildings")
+          }
+          setSubmitting(false);
           // if (createStatus.meta.requestStatus === "fulfilled") {
           //   toast.success("เพิ่มข้อมูลอาคารสำเร็จ")
           //   router.push("/panel/buildings")

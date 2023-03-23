@@ -1,4 +1,4 @@
-export const buildinngImageURL = (image?: string): string => {
+export const buildingImageURL = (image?: string): string => {
 	return `${process.env.NEXT_PUBLIC_API_BUILDING_IMAGE}/${image}`;
   };
   

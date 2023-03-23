@@ -22,7 +22,7 @@ import toast, { Toaster } from "react-hot-toast";
 import withAuth from "@/components/withAuth";
 import { IconOptions, LatLng, LatLngExpression } from 'leaflet';
 import { Switch, FormControlLabel } from '@material-ui/core';
-import { buildinngImageURL } from '@/utils/common.util'
+import { buildingImageURL } from '@/utils/common.util'
 import { isServer, getBase64 } from '@/utils/common.util'
 
 
@@ -260,7 +260,7 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
         <Image
           objectFit="contain"
           alt="building image"
-          src={buildinngImageURL(values.image)}
+          src={buildingImageURL(values.image)}
           width={100}
           height={100}
         />
