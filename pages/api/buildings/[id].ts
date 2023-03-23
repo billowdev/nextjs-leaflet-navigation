@@ -81,3 +81,33 @@ async function updateBuilding(req: NextApiRequest, res: NextApiResponse<any>) {
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 }
+
+// async function createBuilding(req: NextApiRequest, res: NextApiResponse<any>) {
+//   try {
+//     const accessToken = req.cookies[ACCESS_TOKEN_KEY];
+//     if (!accessToken) {
+//       return res.status(401).json({ message: 'Unauthorized' });
+//     }
+
+//     const createBody = req.body;
+//     if (createBody) {
+//       const { data } = await httpClient.post(`/buildings/create`, createBody, {
+//         headers: {
+//           'Authorization': `Bearer ${accessToken}`,
+//         },
+//       });
+
+//       if(data){
+//         return res.status(200).json(data);
+//       }else{
+//         return res.status(400).json(data);
+//       }
+//     } else {
+//       return res.status(400).json({ message: 'create building is failed' });
+//     }
+
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// }

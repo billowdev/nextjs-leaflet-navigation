@@ -21,6 +21,7 @@ import { updateBuilding } from "@/store/slices/buildingSlice";
 import toast, { Toaster } from "react-hot-toast";
 import withAuth from "@/components/withAuth";
 import { IconOptions, LatLng, LatLngExpression } from 'leaflet';
+import { Switch, FormControlLabel } from '@material-ui/core';
 
 import {isServer} from '@/utils/common.util'
 export interface BuildingPayloadC {
@@ -91,6 +92,7 @@ const Edit = ({ building, allBuildings }: Props) => {
   const showForm = ({
     values,
     setFieldValue,
+    setFieldTouched,
     isValid,
   }: FormikProps<BuildingPayload>) => {
     return (
@@ -157,6 +159,34 @@ const Edit = ({ building, allBuildings }: Props) => {
               label="ลองจิจูด"
             />
             <br />
+            
+     <FormControlLabel
+            control={
+              <Field
+                name="is_node"
+                render={({ field }) => (
+                  <Switch
+                    disabled={false}
+                    {...field}
+                    checked={values.is_node}
+                    onBlur={(e: React.ChangeEvent<any>) => {
+                      e.preventDefault();
+                      const { name, value } = e.target;
+                      setFieldTouched(name, true);
+                    }}
+                    onChange={(e: React.ChangeEvent<any>) => {
+                      e.preventDefault();
+                      const { name, checked } = e.target;
+                      setFieldValue(name, checked);
+                    }}
+
+                  />
+                )}
+              />
+            }
+            label="เป็นข้อมูลสถานที่หรืออาคารใช่หรือไม่"
+          />
+
           </CardContent>
           <CardActions>
             <Button

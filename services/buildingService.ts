@@ -13,7 +13,9 @@ export const getBuilding = async (id: string) => {
 };
 
 export const createBuilding = async (data: BuildingPayload): Promise<any> => {
-	await httpClient.post(`/buildings`, data);
+	await httpClient.post(`/buildings/create`, data, {
+		baseURL: process.env.NEXT_PUBLIC_BASE_URL_LOCAL_API,
+	});
 };
 
 export const updateBuilding = async (data: any): Promise<void> => {

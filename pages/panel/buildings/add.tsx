@@ -17,13 +17,13 @@ import React, { useEffect, useState} from "react";
 import Image from "next/image";
 import { Router, useRouter } from "next/router";
 import { useAppDispatch } from "@/store/store";
-import { updateBuilding } from "@/store/slices/buildingSlice";
+import { createBuilding } from "@/store/slices/buildingSlice";
 import toast, { Toaster } from "react-hot-toast";
 import withAuth from "@/components/withAuth";
 import { IconOptions, LatLng, LatLngExpression } from 'leaflet';
-import { Switch } from '@material-ui/core';
+import { Switch, FormControlLabel } from '@material-ui/core';
 import {isServer} from '@/utils/common.util'
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+
 
 export interface BuildingPayloadC {
 	bid: string
@@ -81,8 +81,8 @@ const AddBuilding = () => {
     values,
     setFieldValue,
     setFieldTouched,
-    isValid,
-    setSubmitting,
+    isValid
+   
   }: FormikProps<BuildingPayload>) => {
     return (
       <Form>
@@ -223,17 +223,12 @@ const AddBuilding = () => {
         }}
         initialValues={initialValues}
         onSubmit={async (values, { setSubmitting }) => {
-       
-           //   const createStatus = await dispatch(createBuilding(newUpdateLatLng))
-          // console.log(newUpdateLatLng)
-        const newValues = {...values, ...{lat:currentLat}, ...{lng:currentLng}}   
-       console.log("=================")
-          console.log(newValues)
-          console.log("=================")
-          // if (updateStatus.meta.requestStatus === "fulfilled") {
-          //   toast.success("เพิ่มข้อมูลอาคารสำเร็จ")
-          //   router.push("/panel/buildings")
-          // }
+                 const newValues = {...values, ...{lat:currentLat}, ...{lng:currentLng}}   
+          const createStatus = await dispatch(createBuilding(newValues))
+          if (createStatus.meta.requestStatus === "fulfilled") {
+            toast.success("เพิ่มข้อมูลอาคารสำเร็จ")
+            router.push("/panel/buildings")
+          }
           setSubmitting(false);
         }}
       >
