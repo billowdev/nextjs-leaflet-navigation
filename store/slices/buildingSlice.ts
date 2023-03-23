@@ -35,8 +35,11 @@ export const createBuilding = createAsyncThunk(
 
 export const updateBuilding = createAsyncThunk(
   "buildings/update",
-  async (data: any) => {
-    await buildingService.updateBuilding(data);
+  async (data:any) => {
+    console.log("========== update building slice ============")
+    console.log(data)
+    console.log("========================================")
+    await buildingService.updateBuilding(data.id, data.body, data.accessToken);
   }
 );
 

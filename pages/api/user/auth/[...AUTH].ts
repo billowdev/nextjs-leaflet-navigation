@@ -4,7 +4,9 @@ import {
 	HTTP_METHOD_GET,
 	ACCESS_TOKEN_KEY,
 } from "@/utils/constant.util";
-import { clearCookie, setCookie } from "@/utils/cookies.util";
+import { clearCookie, 
+	setCookie 
+} from "@/utils/cookies.util";
 import httpClient from "@/utils/httpClient.util";
 import type { NextApiRequest, NextApiResponse } from "next";
 import cookie from "cookie";
@@ -36,10 +38,11 @@ async function signin(req: NextApiRequest, res: NextApiResponse<any>) {
 	
 		setCookie(res, ACCESS_TOKEN_KEY, access_token, {
 			httpOnly: true,
-			// secure: process.env.NODE_ENV !== "development",
+			secure: process.env.NODE_ENV !== "development",
 			sameSite: "strict",
 			path: "/",
 		});
+
 		res.json(response.data);
 	} catch (error: any) {
 		res.status(400).end();

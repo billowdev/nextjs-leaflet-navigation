@@ -12,5 +12,7 @@ export interface BuildingResponse {
 	lng: string
 	name: string
 	image: string
+	file?: any | Blob;
+	file_obj?: URL | string;
   }
   

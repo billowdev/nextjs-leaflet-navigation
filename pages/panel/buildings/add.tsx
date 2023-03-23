@@ -60,7 +60,7 @@ const AddBuilding = () => {
 
   const [currentLatLng, setCurrentLatLng] = React.useState<[number, number]>([17.18898481078793, 104.0896523550969]);
   const [currentLat, setCurrentLat] = React.useState<number>(17.18898481078793);
-  const [currentLng, setCurrentLng] = React.useState<number>(parseFloat(104.0896523550969));
+  const [currentLng, setCurrentLng] = React.useState<number>(104.0896523550969);
 
   const center: LatLngExpression = [currentLatLng[0], currentLatLng[1]];
   const zoom: number = 16;

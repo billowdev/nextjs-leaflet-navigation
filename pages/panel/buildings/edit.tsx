@@ -13,7 +13,7 @@ import { Field, Form, Formik, FormikProps } from "formik";
 import { TextField } from "formik-material-ui";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Link from "next/link";
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Router, useRouter } from "next/router";
 import { useAppDispatch } from "@/store/store";
@@ -22,24 +22,26 @@ import toast, { Toaster } from "react-hot-toast";
 import withAuth from "@/components/withAuth";
 import { IconOptions, LatLng, LatLngExpression } from 'leaflet';
 import { Switch, FormControlLabel } from '@material-ui/core';
+import { buildinngImageURL } from '@/utils/common.util'
+import { isServer, getBase64 } from '@/utils/common.util'
 
-import {isServer} from '@/utils/common.util'
+
 export interface BuildingPayloadC {
-	bid: string
-	desc: string
-	id: number
-	is_node: boolean
-	lat?: string
-	lng?: string
-	name: string
-	image: string
-  }
-  
+  bid: string
+  desc: string
+  id: number
+  is_node: boolean
+  lat?: string
+  lng?: string
+  name: string
+  image: string
+}
 
 
 type Props = {
   building: BuildingPayload;
   allBuildings: BuildingPayload[]
+  accessToken: string
   // building: BuildingPayloadC;
   // allBuildings: BuildingPayloadC[]
 };
@@ -65,10 +67,10 @@ const Popup = dynamic(() => import('react-leaflet').then((mod) => mod.Popup), {
 
 
 
-const Edit = ({ building, allBuildings }: Props) => {
+const Edit = ({ building, allBuildings, accessToken }: Props) => {
 
 
-  
+
 
 
   const [currentLat, setCurrentLat] = React.useState<number>(parseFloat(building.lat));
@@ -129,7 +131,7 @@ const Edit = ({ building, allBuildings }: Props) => {
               label="รายละเอียด"
             />
             <br />
-           <Field
+            <Field
               style={{ marginTop: 16 }}
               fullWidth
               value={currentLat}
@@ -159,33 +161,66 @@ const Edit = ({ building, allBuildings }: Props) => {
               label="ลองจิจูด"
             />
             <br />
-            
-     <FormControlLabel
-            control={
-              <Field
-                name="is_node"
-                render={({ field }) => (
-                  <Switch
-                    disabled={false}
-                    {...field}
-                    checked={values.is_node}
-                    onBlur={(e: React.ChangeEvent<any>) => {
-                      e.preventDefault();
-                      const { name, value } = e.target;
-                      setFieldTouched(name, true);
-                    }}
-                    onChange={(e: React.ChangeEvent<any>) => {
-                      e.preventDefault();
-                      const { name, checked } = e.target;
-                      setFieldValue(name, checked);
-                    }}
 
-                  />
-                )}
+            <FormControlLabel
+              control={
+                <Field
+                  name="is_node"
+                  render={({ field }) => (
+                    <Switch
+                      disabled={false}
+                      {...field}
+                      checked={values.is_node}
+                      onBlur={(e: React.ChangeEvent<any>) => {
+                        e.preventDefault();
+                        const { name, value } = e.target;
+                        setFieldTouched(name, true);
+                      }}
+                      onChange={(e: React.ChangeEvent<any>) => {
+                        e.preventDefault();
+                        const { name, checked } = e.target;
+                        setFieldValue(name, checked);
+                      }}
+
+                    />
+                  )}
+                />
+              }
+              label="เป็นข้อมูลสถานที่หรืออาคารใช่หรือไม่"
+            />
+
+            <div style={{ margin: 16 }}>{showPreviewImage(values)}</div>
+
+            <div>
+              <Image
+                objectFit="cover"
+                alt="product image"
+                src="/static/img/logo-h.png"
+                width={25}
+                height={20}
               />
-            }
-            label="เป็นข้อมูลสถานที่หรืออาคารใช่หรือไม่"
-          />
+              <span style={{ color: "#00B0CD", marginLeft: 10 }}>
+                Add Picture
+              </span>
+
+              <input
+                type="file"
+                onChange={(e: React.ChangeEvent<any>) => {
+                  e.preventDefault();
+                  setFieldValue("file", e.target.files[0]); // for upload
+                  setFieldValue(
+                    "file_obj",
+                    URL.createObjectURL(e.target.files[0])
+                  ); // for preview image
+                }}
+                name="image"
+                click-type="type1"
+                multiple
+                accept="image/*"
+                id="files"
+                style={{ padding: "20px 0 0 20px" }}
+              />
+            </div>
 
           </CardContent>
           <CardActions>
@@ -210,9 +245,29 @@ const Edit = ({ building, allBuildings }: Props) => {
     );
   };
 
-    
-
-  
+  const showPreviewImage = (values: any) => {
+    if (values.file_obj) {
+      return (
+        <Image
+          objectFit="contain"
+          alt="building image"
+          src={values.file_obj}
+          width={100}
+          height={100}
+        />
+      );
+    } else if (values.image) {
+      return (
+        <Image
+          objectFit="contain"
+          alt="building image"
+          src={buildinngImageURL(values.image)}
+          width={100}
+          height={100}
+        />
+      );
+    }
+  };
   return (
     <Layout>
       <Formik
@@ -222,28 +277,23 @@ const Edit = ({ building, allBuildings }: Props) => {
           if (!values.name) errors.name = "กรุณากรอกชื่ออาคาร";
           return errors;
         }}
-        initialValues={{
-          name: building.name,
-          desc: building.desc,
-          bid: building.bid,
-          image: building.image,
-          id: building.id,
-          is_node: building.is_node,
-          lat: building.lat,
-          lng:building.lng
-        }}
+        initialValues={building}
         onSubmit={async (values, { setSubmitting }) => {
-          const newLat = (currentLatLng[0]).toString();
-          const newLng = (currentLatLng[1]).toString() 
-          const newUpdateLatLng = {
-            ...values, 
-            ...{lat:newLat}, 
-            ...{lng:newLng}
+          let data : FormData = new FormData();
+          data.append("id", String(values.id));
+          data.append("bid", String(values.bid));
+          data.append("desc", String(values.desc));
+          data.append("is_node", values.is_node);
+         
+          data.append("lat", String(currentLat));
+          data.append("lng", String(currentLng));
+          data.append("name", String(values.name));
+          if (values.file) {
+            data.append("file", values.file);
+            data.append("image", values.file.filename);
           }
-          const updateStatus = await dispatch(updateBuilding(newUpdateLatLng))
-          // console.log(newUpdateLatLng)
-          // console.log(newUpdateLatLng)
-          // console.log("=================")
+          const updateStatus = await dispatch(updateBuilding({id:values.id, body:data, accessToken}))
+
           if (updateStatus.meta.requestStatus === "fulfilled") {
             toast.success("แก้ไขข้อมูลอาคารสำเร็จ")
             router.push("/panel/buildings")
@@ -311,7 +361,7 @@ const Edit = ({ building, allBuildings }: Props) => {
 
       
 
-    </Layout>
+    </Layout >
   );
 };
 
@@ -324,10 +374,13 @@ export const getServerSideProps: GetServerSideProps = async (
   if (dataId) {
     const building = await getBuilding(dataId);
     const allBuildings = await getBuildings();
+    const accessToken = context.req.cookies['access_token']
+
     return {
       props: {
         building,
-        allBuildings
+        allBuildings,
+        accessToken
       },
     };
   } else {
