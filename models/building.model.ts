@@ -6,7 +6,7 @@ export interface BuildingResponse {
   export interface BuildingPayload {
 	bid: string
 	desc: string
-	id: number
+	id?: number
 	is_node: boolean
 	lat: string
 	lng: string
