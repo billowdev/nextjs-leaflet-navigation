@@ -63,6 +63,8 @@ const AddBuilding = ({ accessToken }: Props) => {
     setCurrentLatLng([parseFloat(event.target.getLatLng()['lat']), parseFloat(event.target.getLatLng()['lng'])])
   }
 
+
+
   const router = useRouter();
   const dispatch = useAppDispatch();
   const showForm = ({
@@ -112,9 +114,9 @@ const AddBuilding = ({ accessToken }: Props) => {
               value={currentLat}
               component={TextField}
               onChange={(e: React.ChangeEvent<any>) => {
-                e.preventDefault();
                 const newLat = parseFloat(e.target.value);
                 setCurrentLat(newLat);
+                setFieldValue("lat", newLat);
               }}
               name="lat"
               type="text"
@@ -126,9 +128,9 @@ const AddBuilding = ({ accessToken }: Props) => {
               fullWidth
               value={currentLng}
               onChange={(e: React.ChangeEvent<any>) => {
-                e.preventDefault();
-                setCurrentLng(parseFloat(e.target.value));
-                setFieldValue("lng", currentLng.toString());
+              const newLng = parseFloat(e.target.value);
+              setCurrentLng(newLng);
+              setFieldValue("lng", newLng);
               }}
               component={TextField}
               name="lng"
@@ -148,7 +150,7 @@ const AddBuilding = ({ accessToken }: Props) => {
                       onBlur={(e: React.ChangeEvent<any>) => {
                         e.preventDefault();
                         const { name, value } = e.target;
-                        setFieldTouched(name, true);
+                        setFieldTouched(name, value);
                       }}
                       onChange={(e: React.ChangeEvent<any>) => {
                         e.preventDefault();
@@ -253,6 +255,7 @@ const AddBuilding = ({ accessToken }: Props) => {
     is_node: false,
     lat: currentLat.toString(),
     lng: currentLng.toString()
+    
   }
 
   return (
@@ -282,11 +285,6 @@ const AddBuilding = ({ accessToken }: Props) => {
             toast.success("เพิ่มข้อมูลอาคารสำเร็จ")
             router.push("/panel/buildings")
           }
-          setSubmitting(false);
-          // if (createStatus.meta.requestStatus === "fulfilled") {
-          //   toast.success("เพิ่มข้อมูลอาคารสำเร็จ")
-          //   router.push("/panel/buildings")
-          // }
           setSubmitting(false);
         }}
       >

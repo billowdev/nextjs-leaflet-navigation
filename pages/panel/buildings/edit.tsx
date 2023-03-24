@@ -137,9 +137,9 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
               value={currentLat}
               component={TextField}
               onChange={(e: React.ChangeEvent<any>) => {
-                e.preventDefault();
-                setCurrentLat(currentLat);
-                setFieldValue("lat", currentLat.toString());
+                const newLat = parseFloat(e.target.value);
+                setCurrentLat(newLat);
+                setFieldValue("lat", newLat);
               }}
               name="lat"
               type="text"
@@ -151,9 +151,9 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
               fullWidth
               value={currentLng}
               onChange={(e: React.ChangeEvent<any>) => {
-                e.preventDefault();
-                setCurrentLng(currentLng);
-                setFieldValue("lng", currentLng.toString());
+                const newLng = parseFloat(e.target.value);
+              setCurrentLng(newLng);
+              setFieldValue("lng", newLng);
               }}
               component={TextField}
               name="lng"
@@ -173,7 +173,7 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
                       onBlur={(e: React.ChangeEvent<any>) => {
                         e.preventDefault();
                         const { name, value } = e.target;
-                        setFieldTouched(name, true);
+                        setFieldTouched(name, value);
                       }}
                       onChange={(e: React.ChangeEvent<any>) => {
                         e.preventDefault();
@@ -267,6 +267,19 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
       );
     }
   };
+
+  
+  const initialValues: BuildingPayload =  {
+    id: building.id,
+    name: building.name,
+    desc:building.desc,
+    bid: building.bid,
+    image: building.image,
+    is_node: false,
+    lat: currentLat.toString(),
+    lng: currentLng.toString()
+  }
+
   return (
     <Layout>
       <Formik
@@ -276,14 +289,13 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
           if (!values.name) errors.name = "กรุณากรอกชื่ออาคาร";
           return errors;
         }}
-        initialValues={building}
+        initialValues={initialValues}
         onSubmit={async (values, { setSubmitting }) => {
           let data : FormData = new FormData();
           data.append("id", String(values.id));
           data.append("bid", String(values.bid));
           data.append("desc", String(values.desc));
           data.append("is_node", String(values.is_node));
-         
           data.append("lat", String(currentLat));
           data.append("lng", String(currentLng));
           data.append("name", String(values.name));
