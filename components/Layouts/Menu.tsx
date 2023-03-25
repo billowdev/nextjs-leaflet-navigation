@@ -123,7 +123,7 @@ export default function Menu({ open, onDrawerClose }: MenuProp) {
           </ListItem>
         </Link>
         
-        <Link href="/panel/users" passHref>
+        {/* <Link href="/panel/users" passHref>
           <ListItem
             button
             className={router.pathname === "/panel/users" ? "Mui-selected" : ""}
@@ -133,7 +133,7 @@ export default function Menu({ open, onDrawerClose }: MenuProp) {
             </ListItemIcon>
             <ListItemText primary="จัดการข้อมูลสมาชิก" />
           </ListItem>
-        </Link>
+        </Link> */}
 
         <Divider />
 

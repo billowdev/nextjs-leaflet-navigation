@@ -27,6 +27,8 @@ import { buildingImageURL } from '@/utils/common.util'
 
   interface Props {
     accessToken?: string
+    allBuildings: BuildingPayload[]
+
   }
   
 
@@ -47,7 +49,7 @@ const Popup = dynamic(() => import('react-leaflet').then((mod) => mod.Popup), {
 
 
 
-const AddBuilding = ({ accessToken }: Props) => {
+const AddBuilding = ({ accessToken, allBuildings }: Props) => {
 
   const [currentLatLng, setCurrentLatLng] = React.useState<[number, number]>([17.18898481078793, 104.0896523550969]);
   const [currentLat, setCurrentLat] = React.useState<number>(17.18898481078793);
@@ -300,8 +302,27 @@ const AddBuilding = ({ accessToken }: Props) => {
         >     
 
           <Popup autoClose={false}>
-        <span>โหนด</span>
+        <span>โหนดที่กำลังจะเพิ่ม</span>
       </Popup></Marker> 
+
+  {
+              allBuildings
+              .filter(bd => bd.lat !== currentLat.toString() || bd.lng !== currentLng.toString())
+              .map(({ bid, name, desc, lat, lng, image }) => (
+                <Marker 
+                key={bid} 
+                position={[parseFloat(lat), parseFloat(lng)]}                
+                >
+                  <Popup key={bid}>
+                    <div>
+                      <h3>{bid}</h3>
+                      <h3>{name}</h3>
+                      <p>{desc}</p>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))
+              }
 
       </MapContainer>
 
@@ -315,9 +336,11 @@ export const getServerSideProps: GetServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
     const accessToken = context.req.cookies['access_token']
+    const allBuildings = await getBuildings();
     return {
       props: {
-        accessToken
+        accessToken,
+        allBuildings
       },
     };
   } 

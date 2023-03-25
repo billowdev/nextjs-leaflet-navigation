@@ -203,12 +203,22 @@ function Navigation({ nodes, buildings }: Props) {
                     <h3>{bid}</h3>
                     <h3>{name}</h3>
                     <p>{desc}</p>
-                    <Image
-                      src={`${BUILDING_IMAGE_ROUTE}/${image}`}
-                      alt="My Image"
-                      width={100}
-                      height={100}
-                    />
+                    {image ? (
+                    <React.Fragment>
+                      <Image
+                        src={`${BUILDING_IMAGE_ROUTE}/${image}`}
+                        alt="My Image"
+                        width={100}
+                        height={100}
+                      />
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment>
+                      
+                    </React.Fragment>
+                  )}
+
+                   
                   </div>
                 </Popup>
               </Marker>

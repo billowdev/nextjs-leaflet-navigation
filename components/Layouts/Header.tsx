@@ -51,7 +51,7 @@ export default function Header({ open, onDrawerOpen }: HeaderProp) {
   const userData = useSelector(userSelector)
   
   return (
-    <AppBar position="fixed" open={open}>
+    <AppBar position="fixed" open={open} color="primary">
       <Toolbar>
         <IconButton
           color="inherit"

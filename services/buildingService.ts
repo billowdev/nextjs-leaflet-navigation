@@ -13,7 +13,6 @@ export const getBuilding = async (id: string) => {
 };
 
 export const createBuilding = async (data: FormData, accessToken:string): Promise<any> => {
-	console.log(accessToken)
 	await axios.post(`/buildings/create`, data, {
 		headers: {
 		  Authorization: `Bearer ${accessToken}`
@@ -34,12 +33,9 @@ export const updateBuilding = async (id:string, data: FormData, accessToken: str
 };
 
 export const deleteBuilding = async (id: string): Promise<void> => {
-	const response = await httpClient.delete(`/buildings/${id}`,{
+	 await httpClient.delete(`/buildings/${id}`,{
 		baseURL: process.env.NEXT_PUBLIC_BASE_URL_LOCAL_API,
 	});
-	// console.log("==============")
-	// console.log(response)
-	// console.log("==============")
 };
 
 

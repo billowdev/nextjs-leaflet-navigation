@@ -16,6 +16,7 @@ import { useAppDispatch } from "@/store/store";
 import { signIn } from "@/store/slices/userSlice";
 import withAuth from "@/components/withAuth";
 import toast from "react-hot-toast";
+import Layout from "@/components/Layouts/Layout";
 
 type Props = {};
 
@@ -31,7 +32,7 @@ const SignIn = ({}: Props) => {
     handleSubmit,
   }: FormikProps<any>) => {
     return (
-      <Form onSubmit={handleSubmit}>
+       <Form onSubmit={handleSubmit}>
         <Field
           component={TextField}
           name="username"
@@ -66,11 +67,12 @@ const SignIn = ({}: Props) => {
           ระบบนำทาง
         </Button>
       </Form>
+   
     );
   };
 
   return (
-    <React.Fragment>
+    <Layout>
       <Box
         sx={{
           display: "flex",
@@ -81,7 +83,7 @@ const SignIn = ({}: Props) => {
         }}
       >
         <Card sx={{ maxWidth: 345 }}>
-          <Typography>ลงชื่อเข้าใช้</Typography>
+          <Typography variant="h3">ลงชื่อเข้าใช้</Typography>
           <CardContent>
             <Formik
               initialValues={{ username: "", password: "" }}
@@ -111,7 +113,7 @@ const SignIn = ({}: Props) => {
           `}
         </style>
       </Box>
-    </React.Fragment>
+    </Layout>
   );
 };
 

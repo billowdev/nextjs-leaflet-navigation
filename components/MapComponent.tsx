@@ -161,8 +161,8 @@ const CustomNavigationMap = (
 				<Marker position={[parseFloat(toGoal[0]), parseFloat(toGoal[1])]}>
 					<Popup>อาคารเป้าหมายของคุณ</Popup>
 				</Marker>
-				<Polyline pathOptions={{ color: 'blue', dashArray: '10, 10' }} positions={path} />
-				<Polyline pathOptions={{ color: 'red' }} positions={_path} />
+				<Polyline pathOptions={{ color: 'blue', dashArray: '10, 10'  }} positions={path} />
+				<Polyline pathOptions={{ color: 'green' }} positions={_path} />
 			</div>
 		</MapContainer>
 	);

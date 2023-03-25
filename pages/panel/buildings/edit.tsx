@@ -26,27 +26,13 @@ import { buildingImageURL } from '@/utils/common.util'
 import { isServer, getBase64 } from '@/utils/common.util'
 
 
-export interface BuildingPayloadC {
-  bid: string
-  desc: string
-  id: number
-  is_node: boolean
-  lat?: string
-  lng?: string
-  name: string
-  image: string
-}
 
 
 type Props = {
   building: BuildingPayload;
   allBuildings: BuildingPayload[]
   accessToken: string
-  // building: BuildingPayloadC;
-  // allBuildings: BuildingPayloadC[]
 };
-
-
 
 
 
@@ -66,10 +52,7 @@ const Popup = dynamic(() => import('react-leaflet').then((mod) => mod.Popup), {
 });
 
 
-
 const Edit = ({ building, allBuildings, accessToken }: Props) => {
-
-
 
 
 
@@ -280,6 +263,17 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
     lng: currentLng.toString()
   }
 
+
+  // const MarkerIcon = React.useMemo(() => dynamic(
+  //   () => import('@/components/MarkerIcon'), // replace '@components/map' with your component's location
+  //   {
+  //     loading: () => <p>A map is loading</p>,
+  //     ssr: false // This line is important. It's what prevents server-side render
+  //   }
+
+  // ), [])
+
+
   return (
     <Layout>
       <Formik
@@ -323,51 +317,29 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
         }}
         >     
 
-          <Popup autoClose={false}>
+          <Popup autoClose={false} >
         <span>โหนดที่กำลังแก้ไข</span>
-      </Popup></Marker> 
-
-
-      {/* {allBuildings
-      .map(({ bid, name, desc, lat, lng, image }) => (
-              <Marker key={bid} position={[parseFloat(lat), parseFloat(lng)]}>
-                <Popup>
-                  <div>
-                    <h3>{bid}</h3>
-                    <h3>{name}</h3>
-                    <p>{desc}</p>
-                  </div>
-                </Popup>
-              </Marker>
-            ))} */}
-
-              {/* {
-                allBuildings
-                .filter(bd => bd.bid !== building.bid)
-                .map(({ bid, name, desc, lat, lng, image }) => (
-                  <Marker key={bid} position={[parseFloat(lat), parseFloat(lng)]}>
-                    <Popup key={bid}>
-                      <div>
-                        <h3>{bid}</h3>
-                        <h3>{name}</h3>
-                        <p>{desc}</p>
-                      </div>
-                    </Popup>
-                  // </Marker>
-                ))
+       </Popup>
+      </Marker> 
+     
+      {/* {
+              allBuildings
+              .filter(bd => bd.bid !== building.bid)
+              .map(({ bid, name, desc, lat, lng, image }) => (
+                <Marker 
+                key={bid} 
+                position={[parseFloat(lat), parseFloat(lng)]}                
+                >
+                  <Popup key={bid}>
+                    <div>
+                      <h3>{bid}</h3>
+                      <h3>{name}</h3>
+                      <p>{desc}</p>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))
               } */}
-
-{/* {allBuildings.map(({ bid, name, desc, lat, lng, image }) => (
-        <Marker key={bid} position={[parseFloat(lat), parseFloat(lng)]}  icon={redIcon ?? undefined}>
-          <Popup>
-            <div>
-              <h3>{bid}</h3>
-              <h3>{name}</h3>
-              <p>{desc}</p>
-            </div>
-          </Popup>
-        </Marker>
-      ))} */}
       </MapContainer>
 
       
