@@ -23,4 +23,4 @@ const AboutUs = ({}: Props) => {
   );
 };
 
-export default withAuth(AboutUs);
+export default AboutUs

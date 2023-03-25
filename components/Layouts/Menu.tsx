@@ -135,6 +135,19 @@ export default function Menu({ open, onDrawerClose }: MenuProp) {
           </ListItem>
         </Link> */}
 
+          <Link href="/aboutus" passHref>
+          <ListItem
+            button
+            className={router.pathname === "/aboutus" ? "Mui-selected" : ""}
+          >
+            <ListItemIcon>
+              <Person />
+            </ListItemIcon>
+            <ListItemText primary="เกี่ยวกับผู้พัฒนาระบบ" />
+          </ListItem>
+        </Link>
+     
+            
         <Divider />
 
   <Link href="/" passHref>

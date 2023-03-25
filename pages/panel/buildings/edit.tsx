@@ -70,8 +70,6 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
     setCurrentLatLng([parseFloat(event.target.getLatLng()['lat']), parseFloat(event.target.getLatLng()['lng'])])
   }
 
-
-
   const router = useRouter();
   const dispatch = useAppDispatch();
   const showForm = ({
@@ -144,7 +142,6 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
               label="ลองจิจูด"
             />
             <br />
-
             <FormControlLabel
               control={
                 <Field
@@ -270,7 +267,6 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
   //     loading: () => <p>A map is loading</p>,
   //     ssr: false // This line is important. It's what prevents server-side render
   //   }
-
   // ), [])
 
 
