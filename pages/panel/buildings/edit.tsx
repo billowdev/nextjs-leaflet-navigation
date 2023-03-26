@@ -68,7 +68,6 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
   }
 
 
-
   const [openDialog, setOpenDialog] = React.useState<boolean>(false);
   const [updateValue, setUpdateValue] = React.useState<BuildingPayload>(initialValues);
 

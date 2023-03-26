@@ -20,7 +20,7 @@ import { createBuilding } from "@/store/slices/buildingSlice";
 import toast, { Toaster } from "react-hot-toast";
 import withAuth from "@/components/withAuth";
 import { IconOptions, LatLng, LatLngExpression } from 'leaflet';
-import { Switch, FormControlLabel } from '@material-ui/core';
+import { Switch, FormControlLabel, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { buildingImageURL } from '@/utils/common.util'
   
@@ -51,13 +51,25 @@ const Popup = dynamic(() => import('react-leaflet').then((mod) => mod.Popup), {
 
 const AddBuilding = ({ accessToken, allBuildings }: Props) => {
 
+  const [openDialog, setOpenDialog] = React.useState<boolean>(false);
   const [currentLatLng, setCurrentLatLng] = React.useState<[number, number]>([17.18898481078793, 104.0896523550969]);
   const [currentLat, setCurrentLat] = React.useState<number>(17.18898481078793);
   const [currentLng, setCurrentLng] = React.useState<number>(104.0896523550969);
+  const initialValues: BuildingPayload =  {
+    name: "",
+    desc:"",
+    bid: "",
+    image: "",
+    is_node: false,
+    lat: currentLat.toString(),
+    lng: currentLng.toString()
+    
+  }
+  const [addValue, setAddValue] = React.useState<BuildingPayload>(initialValues);
 
   const center: LatLngExpression = [currentLatLng[0], currentLatLng[1]];
   const zoom: number = 16;
-
+  
   const handleMarkerDragEnd = (event: any) => {
     console.log([parseFloat(event.target.getLatLng()['lat']), parseFloat(event.target.getLatLng()['lng'])])
     setCurrentLat(parseFloat(event.target.getLatLng()['lat']));
@@ -248,17 +260,52 @@ const AddBuilding = ({ accessToken, allBuildings }: Props) => {
     }
   };
 
-  const initialValues: BuildingPayload =  {
-    
-    name: "",
-    desc:"",
-    bid: "",
-    image: "",
-    is_node: false,
-    lat: currentLat.toString(),
-    lng: currentLng.toString()
-    
-  }
+  const showDialog = () => {
+    return (
+      <Dialog
+        open={openDialog}
+        keepMounted
+        aria-labelledby="alert-dialog-slide-title"
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle id="alert-dialog-slide-title">
+          <br />
+          คุณต้องการเพิ่มข้อมูลใช่หรือไม่? : {addValue.name}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+          การเพิ่มข้อมูลโหนดอาจจะกระทบกับระบบนำทาง
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)} color="info">
+            ยกเลิก
+          </Button>
+          <Button onClick={handleAddConfirm} color="primary">
+            เพิ่มข้อมูล
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
+  const handleAddConfirm = async () => {
+       console.log(addValue)
+      let data : FormData = new FormData();
+      data.append("bid", String(addValue.bid));
+      data.append("desc", String(addValue.desc));
+      data.append("is_node", String(addValue.is_node));
+      data.append("lat", String(currentLat));
+      data.append("lng", String(currentLng));
+      data.append("name", String(addValue.name));
+      if (addValue.file) {
+        data.append("file", addValue.file);
+      }
+      const createStatus = await dispatch(createBuilding({data, accessToken}))
+      if (createStatus.meta.requestStatus === "fulfilled") {
+        toast.success("เพิ่มข้อมูลอาคารสำเร็จ")
+        router.push("/panel/buildings")
+      }
+  };
 
   return (
     <Layout>
@@ -272,21 +319,8 @@ const AddBuilding = ({ accessToken, allBuildings }: Props) => {
         }}
         initialValues={initialValues}
         onSubmit={async (values, { setSubmitting }) => {
-          let data : FormData = new FormData();
-          data.append("bid", String(values.bid));
-          data.append("desc", String(values.desc));
-          data.append("is_node", String(values.is_node));
-          data.append("lat", String(currentLat));
-          data.append("lng", String(currentLng));
-          data.append("name", String(values.name));
-          if (values.file) {
-            data.append("file", values.file);
-          }
-          const createStatus = await dispatch(createBuilding({data, accessToken}))
-          if (createStatus.meta.requestStatus === "fulfilled") {
-            toast.success("เพิ่มข้อมูลอาคารสำเร็จ")
-            router.push("/panel/buildings")
-          }
+          setAddValue(values)
+          setOpenDialog(true);
           setSubmitting(false);
         }}
       >
@@ -325,9 +359,7 @@ const AddBuilding = ({ accessToken, allBuildings }: Props) => {
               }
 
       </MapContainer>
-
-      
-
+      {showDialog()}
     </Layout>
   );
 };
