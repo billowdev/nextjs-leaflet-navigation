@@ -9,6 +9,10 @@ import { Toaster } from "react-hot-toast";
 import { getSession } from "@/store/slices/userSlice";
 
 function MyApp({ Component, pageProps }: AppProps) {
+  
+  React.useEffect(() => {
+    store.dispatch(getSession());
+  }, []);
   const drawerWidth = 240;
 
   const theme = createTheme({
@@ -40,9 +44,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     },
   });
 
-  React.useEffect(() => {
-    store.dispatch(getSession());
-  }, []);
+
 
   return (
     <Provider store={store}>

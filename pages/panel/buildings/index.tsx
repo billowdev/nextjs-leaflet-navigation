@@ -27,19 +27,15 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import NumberFormat from "react-number-format";
-import Moment from "react-moment";
 import router from "next/router";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { TransitionProps } from "@mui/material/transitions";
 import Link from "next/link";
-import AddBuilding from "./add";
 import AddIcon from "@mui/icons-material/Add";
-import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite";
-import { stringify } from "querystring";
 import withAuth from "@/components/withAuth";
 import { BuildingPayload } from "@/models/building.model";
+
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
     children: React.ReactElement<any, any>;
@@ -75,8 +71,8 @@ const CustomToolbar: React.FunctionComponent<{
 type Props = {};
 
 const BuildingPage = ({ }: Props) => {
-  const dispatch: any = useAppDispatch();
-  const buildingsList: any = useSelector(buildingSelector);
+  const dispatch = useAppDispatch();
+  const buildingsList = useSelector(buildingSelector);
   const [openDialog, setOpenDialog] = React.useState<boolean>(false);
   const [selectedBuilding, setSelectedBuilding] = React.useState<BuildingPayload | null>(null);
 

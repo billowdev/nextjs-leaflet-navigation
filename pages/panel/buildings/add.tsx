@@ -289,7 +289,6 @@ const AddBuilding = ({ accessToken, allBuildings }: Props) => {
     );
   };
   const handleAddConfirm = async () => {
-       console.log(addValue)
       let data : FormData = new FormData();
       data.append("bid", String(addValue.bid));
       data.append("desc", String(addValue.desc));
@@ -304,6 +303,8 @@ const AddBuilding = ({ accessToken, allBuildings }: Props) => {
       if (createStatus.meta.requestStatus === "fulfilled") {
         toast.success("เพิ่มข้อมูลอาคารสำเร็จ")
         router.push("/panel/buildings")
+      }else{
+        toast.error("เพิ่มข้อมูลอาคารไม่สำเร็จ โปรดลองอีกครั้ง")
       }
   };
 

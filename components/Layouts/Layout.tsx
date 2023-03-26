@@ -25,7 +25,6 @@ export default function Layout({ children }: LayoutProps) {
   const [open, setOpen] = React.useState(true);
 
   return (
-    <>
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <Header open={open} onDrawerOpen={() => setOpen(true)} />
@@ -35,7 +34,5 @@ export default function Layout({ children }: LayoutProps) {
         {children}
       </Box>
     </Box>
-      <Footer />
-    </>
   );
 }

@@ -114,27 +114,3 @@
     flex-direction: column;
   }
 }
-
-@media (prefers-color-scheme: dark) {
-  .card,
-  .footer {
-    border-color: #222;
-  }
-  .code {
-    background: #111;
-  }
-  .logo img {
-    filter: invert(1);
-  }
-}
-
-
-.timer-wrapper {
-  font-size: 6em;
-}
-
-.timer-message {
-  font-size: 0.5em;
-  min-height: 1.3em;
-  margin-bottom: 0.5em;
-}

@@ -104,7 +104,7 @@ const SignIn = ({}: Props) => {
         <style jsx global>
           {`
             body {
-              min-height: 100vh;
+              min-height: 87vh;
               position: relative;
               margin: 0;
               background-size: cover;

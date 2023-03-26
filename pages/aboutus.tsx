@@ -1,5 +1,4 @@
 import Layout from "@/components/Layouts/Layout";
-import withAuth from "@/components/withAuth";
 import { Paper } from "@mui/material";
 import React from "react";
 import Iframe from "react-iframe";

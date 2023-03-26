@@ -26,6 +26,7 @@ import MyLocationIcon from '@mui/icons-material/MyLocation';
 import NavigationIcon from '@mui/icons-material/Navigation';
 import PlaceIcon from '@mui/icons-material/Place';
 import PersonIcon from '@mui/icons-material/Person';
+
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
   transition: theme.transitions.create("width", {
@@ -81,8 +82,6 @@ type MenuProp = {
 export default function Menu({ open, onDrawerClose }: MenuProp) {
   const theme = useTheme();
   const router = useRouter();
-  const userData = useSelector(userSelector);
-
   return (
     <Drawer variant="permanent" open={open}>
       <DrawerHeader>
@@ -92,9 +91,7 @@ export default function Menu({ open, onDrawerClose }: MenuProp) {
           sx={{ backgroundColor: blue }}
         >
           <Image
-            // src="/static/img/logo-horizontal.png"
             src="/static/img/logo-h.png"
-            
             width={200}
             height={40}
             alt="logo"

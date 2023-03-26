@@ -270,7 +270,6 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
   };
   const handleEditConfirm = async () => {
     if (building) {
-      
       let data : FormData = new FormData();
       data.append("id", String(updateValue.id));
       data.append("bid", String(updateValue.bid));
@@ -288,6 +287,8 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
       if (updateStatus.meta.requestStatus === "fulfilled") {
         toast.success("แก้ไขข้อมูลอาคารสำเร็จ")
         router.push("/panel/buildings")
+      }else{
+        toast.error("แก้ไขข้อมูลอาคารไม่สำเร็จ โปรดลองอีกครั้ง")
       }
       setOpenDialog(false);
     }
