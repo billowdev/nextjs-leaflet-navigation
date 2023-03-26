@@ -21,7 +21,7 @@ import { updateBuilding } from "@/store/slices/buildingSlice";
 import toast, { Toaster } from "react-hot-toast";
 import withAuth from "@/components/withAuth";
 import { IconOptions, LatLng, LatLngExpression } from 'leaflet';
-import { Switch, FormControlLabel } from '@material-ui/core';
+import { Switch, FormControlLabel, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
 import { buildingImageURL } from '@/utils/common.util'
 import { isServer, getBase64 } from '@/utils/common.util'
 
@@ -53,11 +53,24 @@ const Popup = dynamic(() => import('react-leaflet').then((mod) => mod.Popup), {
 
 
 const Edit = ({ building, allBuildings, accessToken }: Props) => {
-
-
-
   const [currentLat, setCurrentLat] = React.useState<number>(parseFloat(building.lat));
   const [currentLng, setCurrentLng] = React.useState<number>(parseFloat(building.lng));
+  
+  const initialValues: BuildingPayload =  {
+    id: building.id,
+    name: building.name,
+    desc:building.desc,
+    bid: building.bid,
+    image: building.image,
+    is_node: building.is_node,
+    lat: currentLat.toString(),
+    lng: currentLng.toString()
+  }
+
+
+
+  const [openDialog, setOpenDialog] = React.useState<boolean>(false);
+  const [updateValue, setUpdateValue] = React.useState<BuildingPayload>(initialValues);
 
   const [currentLatLng, setCurrentLatLng] = React.useState<[number, number]>([parseFloat(building.lat), parseFloat(building.lng)]);
   const center: LatLngExpression = [currentLatLng[0], currentLatLng[1]];
@@ -224,6 +237,63 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
     );
   };
 
+  const showDialog = () => {
+    if (building === null) {
+      return;
+    }
+
+    return (
+      <Dialog
+        open={openDialog}
+        keepMounted
+        aria-labelledby="alert-dialog-slide-title"
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle id="alert-dialog-slide-title">
+          <br />
+          คุณต้องการแก้ไขข้อมูลใช่หรือไม่? : {building.name}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+          การแก้ไขข้อมูลโหนดอาจจะกระทบกับระบบนำทาง
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)} color="info">
+            ยกเลิก
+          </Button>
+          <Button onClick={handleEditConfirm} color="primary">
+            แก้ไข
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
+  const handleEditConfirm = async () => {
+    if (building) {
+      
+      let data : FormData = new FormData();
+      data.append("id", String(updateValue.id));
+      data.append("bid", String(updateValue.bid));
+      data.append("desc", String(updateValue.desc));
+      data.append("is_node", String(updateValue.is_node));
+      data.append("lat", String(currentLat));
+      data.append("lng", String(currentLng));
+      data.append("name", String(updateValue.name));
+      if (updateValue.file) {
+        data.append("file", updateValue.file);
+        data.append("image", updateValue.file.filename);
+      }
+      const updateStatus = await dispatch(updateBuilding({id:updateValue.id, body:data, accessToken}))
+
+      if (updateStatus.meta.requestStatus === "fulfilled") {
+        toast.success("แก้ไขข้อมูลอาคารสำเร็จ")
+        router.push("/panel/buildings")
+      }
+      setOpenDialog(false);
+    }
+  };
+
   const showPreviewImage = (values: any) => {
     if (values.file_obj) {
       return (
@@ -249,16 +319,6 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
   };
 
   
-  const initialValues: BuildingPayload =  {
-    id: building.id,
-    name: building.name,
-    desc:building.desc,
-    bid: building.bid,
-    image: building.image,
-    is_node: false,
-    lat: currentLat.toString(),
-    lng: currentLng.toString()
-  }
 
 
   // const MarkerIcon = React.useMemo(() => dynamic(
@@ -269,7 +329,7 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
   //   }
   // ), [])
 
-
+ 
   return (
     <Layout>
       <Formik
@@ -281,24 +341,8 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
         }}
         initialValues={initialValues}
         onSubmit={async (values, { setSubmitting }) => {
-          let data : FormData = new FormData();
-          data.append("id", String(values.id));
-          data.append("bid", String(values.bid));
-          data.append("desc", String(values.desc));
-          data.append("is_node", String(values.is_node));
-          data.append("lat", String(currentLat));
-          data.append("lng", String(currentLng));
-          data.append("name", String(values.name));
-          if (values.file) {
-            data.append("file", values.file);
-            data.append("image", values.file.filename);
-          }
-          const updateStatus = await dispatch(updateBuilding({id:values.id, body:data, accessToken}))
-
-          if (updateStatus.meta.requestStatus === "fulfilled") {
-            toast.success("แก้ไขข้อมูลอาคารสำเร็จ")
-            router.push("/panel/buildings")
-          }
+          setUpdateValue(values)
+          setOpenDialog(true);
           setSubmitting(false);
         }}
       >
@@ -337,9 +381,7 @@ const Edit = ({ building, allBuildings, accessToken }: Props) => {
               ))
               } */}
       </MapContainer>
-
-      
-
+      {showDialog()}
     </Layout >
   );
 };
